@@ -7,7 +7,7 @@ from pickle import dump
 from sklearn.ensemble import RandomForestClassifier
 from sklearn import tree
 from sklearn.metrics import accuracy_score
-
+from sklearn.model_selection import GridSearchCV
 
 ## Sin feature selection
 
@@ -74,9 +74,6 @@ print(f"Train: {accuracy_score(y_train, y_pred_train)}")
 print(f"Test: {accuracy_score(y_test, y_pred_test)}")
 
 ## Hiperparametrización
-
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import GridSearchCV
 
 param_grid = {
     'n_estimators': [50, 100, 200, 300],            
