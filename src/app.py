@@ -8,7 +8,53 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn import tree
 from sklearn.metrics import accuracy_score
 
-## Cargar el dataset
+
+## Sin feature selection
+
+BASE_PATH = "../data/processed"
+TRAIN_PATHS = [
+    "X_train_con_outliers.xlsx",
+    "X_train_sin_outliers.xlsx",
+]
+TRAIN_DATASETS = []
+for path in TRAIN_PATHS:
+    TRAIN_DATASETS.append(
+        pd.read_excel(f"{BASE_PATH}/{path}")
+    )
+
+TEST_PATHS = [
+    "X_test_con_outliers.xlsx",
+    "X_test_sin_outliers.xlsx",
+]
+TEST_DATASETS = []
+for path in TEST_PATHS:
+    TEST_DATASETS.append(
+        pd.read_excel(f"{BASE_PATH}/{path}")
+    )
+
+y_train = pd.read_excel(f"{BASE_PATH}/y_train.xlsx")
+y_test = pd.read_excel(f"{BASE_PATH}/y_test.xlsx")
+
+results = []
+models=[]
+
+for index, dataset in enumerate(TRAIN_DATASETS):
+    model = RandomForestClassifier(random_state = 42)
+    model.fit(dataset, y_train.values.ravel())
+    models.append(model)
+    
+    y_pred_train = model.predict(dataset)
+    y_pred_test = model.predict(TEST_DATASETS[index])
+
+    results.append(
+        {
+            "train": accuracy_score(y_train, y_pred_train),
+            "test": accuracy_score(y_test, y_pred_test)
+        }
+    )
+
+
+## Con feature selection
 train_data = pd.read_csv("../data/processed/clean_train_con_outliers.csv")
 test_data = pd.read_csv("../data/processed/clean_test_con_outliers.csv")
 
@@ -33,14 +79,13 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import GridSearchCV
 
 param_grid = {
-    'n_estimators': [10, 20, 30, 40, 50, 100, 150],
-    'max_depth': [4, 6, 8, None],
-    'bootstrap':[True, False],
-    'min_samples_split': [2, 5, 10],
-    'min_samples_leaf': [1, 3, 5],
-    'criterion': ['gini', 'entropy']
+    'n_estimators': [50, 100, 200, 300],            
+    'max_depth': [None, 8, 12, 16],                 
+    'min_samples_split': [2, 5, 10],                
+    'min_samples_leaf': [1, 2, 4],                  
+    'bootstrap': [True],                            
+    'criterion': ['gini', 'entropy']                
 }
-
 
 
 grid = GridSearchCV(model, param_grid, scoring = "accuracy", cv = 5)
@@ -55,12 +100,12 @@ grid.fit(X_train, y_train)
 print(f"Mejores hiperparámetros: {grid.best_params_}")
 
 final_model = RandomForestClassifier(
-    bootstrap=False,
+    bootstrap=True,
     criterion='entropy',
-    max_depth=8,
-    min_samples_leaf=5,
-    min_samples_split=2,
-    n_estimators=40,
+    max_depth=None,
+    min_samples_leaf=4,
+    min_samples_split=10,
+    n_estimators=100,
     random_state=42
 )
 
