@@ -55,8 +55,8 @@ for index, dataset in enumerate(TRAIN_DATASETS):
 
 
 ## Con feature selection
-train_data = pd.read_csv("../data/processed/clean_train_con_outliers.csv")
-test_data = pd.read_csv("../data/processed/clean_test_con_outliers.csv")
+train_data = pd.read_csv("../data/processed/clean_train_sin_outliers.csv")
+test_data = pd.read_csv("../data/processed/clean_test_sin_outliers.csv")
 
 X_train = train_data.drop(["Outcome"], axis = 1)
 y_train = train_data["Outcome"]
@@ -116,5 +116,5 @@ print(f"Test accuracy: {accuracy_score(y_test, y_pred_test)}")
 
 ## Guardando el modelo
 
-dump(model, open("../models/random_forest_classifier_42.sav", "wb"))
+dump(model, open("../models/random_forest_classifier_k5_sin_outliers_42.sav", "wb"))
 
